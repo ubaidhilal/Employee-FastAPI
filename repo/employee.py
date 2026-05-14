@@ -29,6 +29,9 @@ def delete_employee_repo(db, db_employee):
     db.delete(db_employee)
     db.commit()
 
+def update_employee_repo(db, db_employee):
+    db.commit()
+    db.refresh(db_employee)
 
 
    

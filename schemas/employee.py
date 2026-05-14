@@ -20,6 +20,10 @@ class EmployeeOut(BaseModel):
     role: UserRole
     is_active: bool
 
+class PasswordChangeRequest(BaseModel):
+    old_password : str
+    new_password  : str    
+
     model_config = {
         "from_attributes": True
     }        

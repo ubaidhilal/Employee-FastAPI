@@ -1,6 +1,6 @@
-from repo.employee import get_user_by_email,register_repo,get_all_employee_repo, get_employee_by_id, delete_employee_repo
+from repo.employee import get_user_by_email,register_repo,get_all_employee_repo, get_employee_by_id, delete_employee_repo, update_employee_repo
 from fastapi import  HTTPException,status
-from core.security import create_token, verify_password
+from core.security import create_token, verify_password, hash_password
 
 
 
@@ -46,6 +46,20 @@ def delete_employee_by_id_service(db, employee_id,current_user):
 
     
 
-
+def update_password_services(db, employee_id, change_password):
+    db_employee = get_employee_by_id(db, employee_id)
+    if not db_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    is_old_password_correct = verify_password(change_password.old_password,  db_employee.password )
+    if not is_old_password_correct:
+        raise HTTPException( status_code=status.HTTP_400_BAD_REQUEST,detail="Incorrect old password")
+    if verify_password(change_password.new_password, db_employee.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="New password cannot be identical to the old password"
+        )  
+    db_employee.password = hash_password(change_password.new_password)
+    update_employee_repo(db, db_employee)
+    return {"message" : "password updated seccusfully"}
     
 
